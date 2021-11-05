@@ -87,12 +87,22 @@ def calculateScalingFactor(x, plot_file=None):
     return scaling_factor
 
 
-def scaleImage(x, scaling_factor):
+def scaleImage(x, scaling_factor, output_directory=None, filename=None):
     """
     Scale the pixel values of an image by a given scaling factor
     """
     x = x.astype(np.float32)
     x *= np.array(scaling_factor)
+
+    if not output_directory is None:
+        assert not filename is None, 'Specify a file name'
+        # Show scaled intensity distribution
+        plt.figure()
+        plt.hist(x.reshape(-1, 1), bins=500, range=[0, 2], log=True)
+        plt.ylabel('log(Counts)')
+        plt.xlabel('Adjusted Pixel Intensity')
+        plt.title('Adjusted intensity distribution for region ' + filename)
+        plt.savefig(output_directory + 'region_'+filename+'_scaled.png')
 
     return x
 
@@ -100,7 +110,8 @@ def scaleImage(x, scaling_factor):
 def preprocessImage(x, mean, std):
     """
     Preprocess image by z score normalization.
-    This function shifts intensity values by their mean and scales them by the standard deviation to get a zero centered distribution with a std of 1.
+    This function shifts intensity values by their mean and scales them by
+    the standard deviation to get a zero centered distribution with a std of 1.
 
     Parameters
     ----------

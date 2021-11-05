@@ -11,9 +11,13 @@ from tqdm import tqdm
 
 def clean_watershed(probability_map: np.ndarray, high_confidence_threshold=0.98, low_confidence_threshold=0.2):
     """
-    This method generates a 'cleaned' segmentation mask from a probability map. It is assumed that a single object is present in the image together with some disconnected fragments that should be ignored.
-    In a first step, high probability regions are taken as a seed point from which the foreground region is expanded by scikit-image's watershed algorithm.
-    The region is expanded only where the foreground probability exceeds the low confidence threshold.
+    This method generates a 'cleaned' segmentation mask from a probability map.
+    It is assumed that a single object is present in the image together with
+    some disconnected fragments that should be ignored.
+    In a first step, high probability regions are taken as a seed point
+    from which the foreground region is expanded by scikit-image's
+    watershed algorithm. The region is expanded only where the foreground
+    probability exceeds the low confidence threshold.
 
     Parameters
     ----------

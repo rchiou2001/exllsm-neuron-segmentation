@@ -1,11 +1,10 @@
 """  
-This module implements a tiling strategy to apply a 3D Unet to arbitrary input volumes.
+This module implements a tiling strategy to apply a 3D Unet
+to arbitrary input volumes.
 
 Linus Meienberg
 June 2020
 """
-
-
 import numpy as np
 from abc import ABC, abstractmethod  # abstract base class and inheritance
 
@@ -31,8 +30,8 @@ class RectangularTiling(Tiling):
     Divides a volume into 0-alinged chunks
     """
 
-    def __init__(self,
-                 start_coord: tuple, end_coord: tuple, chunk_shape: tuple):
+    def __init__(self, start_coord: tuple, end_coord: tuple,
+                 chunk_shape: tuple):
         assert len(start_coord) == 3
         assert len(end_coord) == 3
         assert len(chunk_shape) == 3
@@ -118,14 +117,21 @@ class RectangularTiling(Tiling):
 
 class UnetTiling3D(Tiling):
     """
-    The input volume is tiled with the output shape of the unet. 
-    Each output tile is symmetrically expanded to the input shape to get the corresponding input for the unet.
-    The tiles are ennumerated internally and can be accessed either by their coordinates in the rectangular tiling or their index.
+    The input volume is tiled with the output shape of the unet.
+    Each output tile is symmetrically expanded to the input shape to get the
+    corresponding input for the unet. The tiles are ennumerated internally and
+    can be accessed either by their coordinates in the rectangular tiling or
+    their index.
 
-    If desired a subvolume can be specified within the image volume. The resulting tiling covers only the subvolume but makes use of image data outside the subvolume if it is available.
+    If desired a subvolume can be specified within the image volume.
+    The resulting tiling covers only the subvolume but makes use of image data
+    outside the subvolume if it is available.
 
-    Internally, axis aligned boundary boxes are specified as coordinate tuples of the form (x0,y0,z0,x1,y1,z1) (diagonal oposite corners that define a rectangular volume)
-    Coordinates may protrude from the image shape. Use a Canvas class to handle these cases when reading and writing to arrays.
+    Internally, axis aligned boundary boxes are specified as coordinate tuples
+    of the form (x0,y0,z0,x1,y1,z1) (diagonal oposite corners that define a
+    rectangular volume)
+    Coordinates may protrude from the image shape. Use a Canvas class to handle
+    these cases when reading and writing to arrays.
     """
 
     def __init__(self, image_shape: tuple,
@@ -138,7 +144,9 @@ class UnetTiling3D(Tiling):
         image_shape : tuple
             the shape of the image volume for which a tiling is calculated
         tiling_subvolume : None or tuple
-            the shape of the subvolume that should be tiled. If None is specified the tiling extends over the entire image_shape.
+            the shape of the subvolume that should be tiled.
+            If None is specified the tiling extends over the
+            entire image_shape.
         output_shape : tuple
             shape of the segmentation output of the unet
         input_shape : tuple
@@ -147,14 +155,16 @@ class UnetTiling3D(Tiling):
         super().__init__()
 
         self.image_shape = image_shape
-        # If the tiling shape is not supplied, assume that the tiling extends over the entire image
+        # If the tiling shape is not supplied, assume that the tiling extends
+        # over the entire image
         if tiling_subvolume is None:
             # The entire image is given by the tuple (0,0,0,x_max,y_max,z_max)
             self.tiling_subvolume = (0, 0, 0,) + self.image_shape
         else:
             self.tiling_subvolume = tiling_subvolume
 
-        # Store output and input shape of the unet and check for correct number of dimensions
+        # Store output and input shape of the unet and check for correct
+        # number of dimensions
         self.output_shape = output_shape
         self.input_shape = input_shape
         assert len(self.image_shape) == 3, \
@@ -170,7 +180,8 @@ class UnetTiling3D(Tiling):
             'cannot be smaller than the output shape {self.output_shape}'
 
         # Calculate the coordinate mesh of the tiling
-        # For each axis there are as many tiles as the number of output shapes that fit between the borders of the subvolume
+        # For each axis there are as many tiles as the number of output shapes
+        # that fit between the borders of the subvolume
         self.coords = []
         for d in range(3):
             self.coords.append(
@@ -274,15 +285,16 @@ class Canvas():
 
     def __init__(self, image):
         super().__init__()
-        assert len(image.shape) == 3, 'Specify a 3D array, was ' + \
-            str(image.shape)
+        assert len(image.shape) == 3, \
+            'Specify a 3D array, was ' + str(image.shape)
         self.image = image
         self.shape = self.image.shape
 
     def cropAndPadAABB(self, aabb):
         """
         Extracts the region specified by the aabb from the canvas.
-        If the aabb protrudes from the canvas, it's content is reflected allow extraction of the aabb
+        If the aabb protrudes from the canvas, it's content is
+        reflected allow extraction of the aabb
 
         Parameters
         ----------
@@ -319,8 +331,8 @@ class Canvas():
         tile : 3d tensor
             a rectangular array of data
         """
-        aabb_volume = tuple([aabb[i+3]-aabb[i] for i in range(3)]
-                            )  # calculate the volume specified by the aabb
+        # calculate the volume specified by the aabb
+        aabb_volume = tuple([aabb[i+3]-aabb[i] for i in range(3)])
         assert tile.shape == aabb_volume, 'Slice needs to have the same volume as the aabb'
 
         # clip the target aabb if it protrudes from the canvas volume to get the target coordinates
@@ -331,7 +343,6 @@ class Canvas():
         tile_start = [np.max([0, -d]) for d in aabb[:3]]
         tile_stop = [np.max([0, aabb[i+3] - self.image.shape[i]])
                      for i in range(3)]
-        #print('unet output mask crop from {} to {}'.format(slice_start,slice_stop))
 
         # crop the padding away
         tile_cropped = tile[tile_start[0]:-tile_stop[0] or None,
@@ -339,16 +350,23 @@ class Canvas():
                             tile_start[2]:-tile_stop[2] or None]
 
         # write the cropped slice to the target position in the mask
-        self.image[start[0]:stop[0], start[1]                   :stop[1], start[2]:stop[2]] = tile_cropped
+        self.image[start[0]:stop[0],
+                   start[1]:stop[1],
+                   start[2]:stop[2]] = tile_cropped
 
 
 class AbsoluteCanvas():
-    def __init__(self, image_shape: tuple, canvas_area: tuple, image: np.array):
+    def __init__(self, image_shape: tuple, canvas_area: tuple,
+                 image: np.array):
         """
-        Base class that handels read and write access to 3D volumes.
-        Axis aligned boundary boxes in format (x0,y0,z0,x1,y1,z1) are used to specify subvolumes.
-        If a subvolumes should be read that protrudes from the image, Canvas will mirror it at the border.
-        If a subvolume should be written that protrudes from the writing area tha input is cropped.
+        Base class that handels read and write access to
+        3D volumes.
+        Axis aligned boundary boxes in format (x0,y0,z0,x1,y1,z1)
+        are used to specify subvolumes.
+        If a subvolumes should be read that protrudes from the image,
+        Canvas will mirror it at the border.
+        If a subvolume should be written that protrudes from the writing area
+        the input is cropped.
 
 
         Parameters

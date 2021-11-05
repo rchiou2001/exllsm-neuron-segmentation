@@ -17,6 +17,7 @@ import tensorflow as tf
 import tensorflow.keras.backend as K
 import numpy as np
 
+
 #%% CONSTRUCTION OF UNET by subclassing model
 
 class Unet(tf.keras.Model):
@@ -66,6 +67,7 @@ class Unet(tf.keras.Model):
 
         return out
 
+
 #%% construct model via sequential API
 
 def build_unet(input_shape, n_blocks= 2, initial_filters= 32, useSoftmax=False, bottleneckDropoutRate=0.2, spatialDropout=False, spatialDropoutRate = 0.2, **kwargs):
@@ -106,9 +108,11 @@ def build_unet(input_shape, n_blocks= 2, initial_filters= 32, useSoftmax=False, 
     unet = tf.keras.Model(inputs=inputs, outputs=x)
     return unet
 
+
 #%%IMPLEMENTATION OF UNET BLOCKS
 
-""" When tf.keras.Model is subclassed:
+""" 
+When tf.keras.Model is subclassed:
 
 Use the constructor method __init__ to instantiate the layers as variables of the model instance
 layer parameters are specified but the input shape is passed in the call function
@@ -121,7 +125,8 @@ return the output of the block / model
 """
 
 def _crop_concat(input, residual_input):
-    """Concatenate two 3D images after cropping residual input to the size of input.
+    """
+    Concatenate two 3D images after cropping residual input to the size of input.
     The last (channel) dimension of the tensors is joined. The difference of the input sizes must be even to allow for a central crop.
 
     Parameters
@@ -182,6 +187,7 @@ class InputBlock(tf.keras.layers.Layer):
         config.update({"initial_filters" : self.initial_filters})
         return config
 
+
 class DownsampleBlock(tf.keras.layers.Layer):
     """Unet Downsample Block
 
@@ -232,6 +238,7 @@ class DownsampleBlock(tf.keras.layers.Layer):
         config.update({"filters" : self.filters, "index" : self.index})
         return config
 
+
 class BottleneckBlock(tf.keras.layers.Layer):
     """Central / Bottleneck Block of Unet Architecture
     
@@ -259,7 +266,7 @@ class BottleneckBlock(tf.keras.layers.Layer):
             self.upsample = tf.keras.layers.Conv3DTranspose(filters=filters*2,
                                                             kernel_size = (2,2,2),
                                                             strides= (2,2,2))
-    
+
     def call(self, inputs, training):
         x = self.conv1(inputs)
         x = self.conv2(x)
@@ -271,9 +278,11 @@ class BottleneckBlock(tf.keras.layers.Layer):
         config = super(BottleneckBlock, self).get_config()
         config.update({"filters" : self.filters})
         return config
-    
+
+
 class UpsampleBlock(tf.keras.layers.Layer):
-    """Unet Upsample Block
+    """
+    Unet Upsample Block
 
     Crop and concatenate skip input of corresponding depth to input from layer below.
     Perform two convolutions with a specified number of filters and upsample.
@@ -364,7 +373,6 @@ def weighted_cce_dice_loss(class_weights, dice_weight=1, fromLogits=True):
 
     return cce_dice
 
-# %%
 
 def weighted_categorical_crossentropy(class_weights, fromLogits=True):
     # As seen on GitHub https://gist.github.com/wassname/ce364fddfc8a025bfab4348cf5de852d by wassname
@@ -418,9 +426,9 @@ def soft_dice_loss(fromLogits= True):
 
     return loss
 
-# %%
+
 def soft_dice(y_true, y_pred, epsilon=1e-6):
-    ''' 
+    """
     This code adapted from [Jeremy Jordan](https://www.jeremyjordan.me/semantic-segmentation/) 
 
     Soft dice loss calculation for arbitrary batch size, number of classes, and number of spatial dimensions.
@@ -438,7 +446,7 @@ def soft_dice(y_true, y_pred, epsilon=1e-6):
         https://mediatum.ub.tum.de/doc/1395260/1395260.pdf (page 72)
         
         Adapted from https://github.com/Lasagne/Recipes/issues/99#issuecomment-347775022
-    '''
+    """
     
     # skip the batch and class axis for calculating Dice score
     axes = tuple(range(1, len(y_pred.shape)-1)) 
@@ -446,24 +454,3 @@ def soft_dice(y_true, y_pred, epsilon=1e-6):
     denominator = K.sum(K.square(y_pred) + K.square(y_true), axes)
     
     return 1 - K.mean((numerator + epsilon) / (denominator + epsilon)) # average over classes and batch
-
-"""
-#%% Test loss fn 
-
-weights = [2,1]
-loss = weighted_categorical_crossentropy(weights)
-
-
-y_true = np.array([[0,1],[1,0]])[np.newaxis,np.newaxis,np.newaxis,...]
-#y_pred = np.array([[0.5,0.5],[0.5,0.5]], np.float32)[np.newaxis,np.newaxis,np.newaxis,...]
-y_pred = np.array([[10.,10.],[-10.,10.]], np.float32)[np.newaxis,np.newaxis,np.newaxis,...]
-
-print(tf.nn.softmax(y_pred))
-
-#%% Reference loss -> sum of pixel wise categorical crossentropy in batch
-#tf.reduce_sum( tf.keras.losses.categorical_crossentropy(y_true,y_pred, from_logits=True), axis=[1,2,3] )
-tf.keras.losses.categorical_crossentropy(y_true,y_pred, from_logits=True)*tf.constant([1.,2.])
-# %%
-loss(y_true,y_pred)
-# %%
-"""

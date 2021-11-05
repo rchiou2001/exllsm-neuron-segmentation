@@ -7,7 +7,8 @@ This is an adaptation of Linus Meienberg [tool](https://github.com/randomstructu
 
 To run the tool standalone first setup a conda environment using the following command:
 ```
-conda env create -n neuron-segmentation -f conda-requirements.yml
+conda create -n neuron-segmentation python=3.9
+conda env update -n neuron-segmentation -f conda-requirements.yml
 ```
 then activate it:
 `
@@ -46,3 +47,7 @@ python volumeScalingFactor.py \
     --start 0,0,0 \
     --end 250,250,250
 ```
+
+## Model training and evaluation
+
+For preparing the dataset, training and evaluating the model there are ways to use the tools. One is to invoke the tool from the command line using the corresponding command ending in '_cmd.py': `datasetPreparation_cmd.py`, `training_cmd.py` and/or `evaluation_cmd.py` and the second one is to use the tool without the '_cmd' suffix from a Jupyter notebook.
