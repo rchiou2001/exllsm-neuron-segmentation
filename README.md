@@ -50,25 +50,41 @@ python volumeScalingFactor.py \
 
 ## Model training and evaluation
 
-### Dataset preparation
+For preparing the dataset, training and evaluating the model there are ways to use the tools. One is to invoke the tool from the command line using the corresponding command ending in '_cmd.py': `datasetPreparation_cmd.py`, `training_cmd.py` and/or `evaluation_cmd.py` and the second one is to use the tool without the '_cmd' suffix from a Jupyter notebook.
+
+### Dataset Preparation
 
 Tool for peparing training and evaluation datasets. 
 
 This tool prepares HDF5 datsets (Regions) composed of a raw data and ground truth data channels stored in different groups for model training and evaluation. The Regions are subdivided into a grid of potential Training Examples. Because much of the 3D volume may be empty space, a threshold is set to identify Training Examples with signal. An above-threshold-ratio is set to determine the percentage of Training Examples that should be above the threshold (i.e. Training Examples with and without signal).
 
-Regions = crops that are manually extracted from a image volume; stored at HDF5 datasets where channels are in different groups
-Training examples = small crops automatically extracted from Regions using this script
+* Regions = crops that are manually extracted from a image volume; stored at HDF5 datasets where channels are in different groups
+* Training examples = small crops automatically extracted from Regions using this script
 
-Usage: Usage: 
+Usage: 
 
      python datasetPreparation_cmd.py --region-dir /REGION-DIR/ --dataset-dir /DATASET-DIR/ --output-dir /DATASET-DIR/ --above-threshold-ratio 0.9 --samples-per-region 50
 
+#### Required Parameters
 | Argument   | Default | Description                                                                           |
 |------------|---------|---------------------------------------------------------------------------------------|
 | --output-dir |  | output directory |
 | --dataset-dir |  | directory where output HDF5 dataset is to be saved |
-| --region-dir |  | directory where input HDF5 datasets are located |
+| --region-dir |  | directory where input datasets in HDF5 format are located |
 | --above-threshold-ratio | 0.9 | ratio of Training Examples above the set threshold versus training examples below the set threshold to be included |
 | --samples-per-region | 50 | number of Training Examples per Region to include in the dataset |
 
-For preparing the dataset, training and evaluating the model there are ways to use the tools. One is to invoke the tool from the command line using the corresponding command ending in '_cmd.py': `datasetPreparation_cmd.py`, `training_cmd.py` and/or `evaluation_cmd.py` and the second one is to use the tool without the '_cmd' suffix from a Jupyter notebook.
+### Model Training
+
+This tool will train a U-Net model in HDF5 format using an input dataset in HDF5 format generated via Dataset Preparation (above).
+
+Usage: 
+
+     python training_cmd.py --training-dataset /TRAINING-DATASET-DIR/training-dataset.h5 --output-dir /OUTPUT-DIR/ --model-name TRAINEDMODEL.h5 
+     
+#### Required Parameters
+| Argument   | Default | Description                                                                           |
+|------------|---------|---------------------------------------------------------------------------------------|
+| --training-dataset |  | Path to training dataset in HDF5 format  |
+| --output-dir |  | output directory |
+| --model-name |  | name of trained HDF5 model |
