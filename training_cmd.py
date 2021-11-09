@@ -63,7 +63,7 @@ def main():
     parser.add_argument('--initial-filters',
                         dest='initial_filters',
                         type=int,
-                        default=1,
+                        default=4,
                         help='The number of filter maps in the first ' +
                              'convolution operation')
     parser.add_argument('--bottleneck-dropout-rate',
@@ -130,7 +130,7 @@ def main():
     parser.add_argument('--epochs',
                         dest='n_epochs',
                         type=int,
-                        default=3,
+                        default=10,
                         help='number of epochs to train the model')
     parser.add_argument('--object-class-weight',
                         dest='object_class_weight',
