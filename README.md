@@ -88,3 +88,30 @@ Usage:
 | --training-dataset |  | Path to training dataset in HDF5 format  |
 | --output-dir |  | output directory |
 | --model-name |  | name of trained HDF5 model |
+
+#### Optional Parameters
+| Argument   | Default | Description                                                                           |
+|------------|---------|---------------------------------------------------------------------------------------|
+| --resume | False |  option to resume training a previously trained model  |
+| --pre-trained-model |  | Path to pre-trained model in HDF5 format if --resume True |
+| --set_gpu_mem_growth | False | if True, sets the GPU memory growth |
+
+#### Architecture Parameters
+| Argument   | Default | Description                                                                           |
+|------------|---------|---------------------------------------------------------------------------------------|
+| --initial-filters | 4 |  The number of filter maps in the first convolutional operation  |
+| --bottleneck-dropout-rate | 0.2  |    |
+| --spatial-dropout | False |    |
+| --spatial-dropout-rate | 0.2 |    |
+
+####Training Parameters
+| --test-fraction | 0.2  | Fraction of training examples set aside for validation   |
+| --no-affine | False  |    |
+| --with-elastic-deform | False  |    |
+| --with-occlusions | False |    |
+| --occulsion-size | 40 |    |
+| --epochs | 10 |    |
+| --object-class-weight | 5 |    |
+| --dice-weight | 0.3 |    |
+| --batch-size | 1 |    |
+| --with-visualization-sample | False |    |
