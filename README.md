@@ -105,6 +105,8 @@ Usage:
 | --spatial-dropout-rate | 0.2 |    |
 
 ####Training Parameters
+| Argument   | Default | Description                                                                           |
+|------------|---------|---------------------------------------------------------------------------------------|
 | --test-fraction | 0.2  | Fraction of training examples set aside for validation   |
 | --no-affine | False  |    |
 | --with-elastic-deform | False  |    |
