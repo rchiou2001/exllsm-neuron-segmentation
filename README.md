@@ -103,8 +103,7 @@ Usage:
 | --model-path |  | Path to trained HDF5 model |
 
 #### Optional Parameters
-|------------------------------------------------------------------------------------------------------------|
-| Additional optional parameters to determine the number of examples from the evaluation dataset to be used for evaluation (default 40) and the interval to print examples for visulization (default 10) can be found in the script |
+Additional optional parameters can be found in the script. These include the number of examples from the evaluation dataset to be used for evaluation (default 40) and the interval to print performance examples for visualization (default 10).
 
 ### Image Segmentation
 
