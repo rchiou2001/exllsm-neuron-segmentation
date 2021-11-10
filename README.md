@@ -17,13 +17,13 @@ conda activate neuron-segmentation
 `
 ## Model training and evaluation
 
-For preparing training and evaluation datasets, training, and evaluating the model there are two ways to use the tools. One is to invoke the tool from the command line using the corresponding command ending in '_cmd.py': `datasetPreparation_cmd.py`, `training_cmd.py` and/or `evaluation_cmd.py`. Alternatively, the tools can be used without the '_cmd' suffix from a Jupyter notebook.
+There are two ways to use the tools to prepare training and evaluation datasets, train a model, and evaluate model performance. One is to invoke the tool from the command line using the corresponding command ending in '_cmd.py': `datasetPreparation_cmd.py`, `training_cmd.py` and/or `evaluation_cmd.py`. Alternatively, the tools can be used without the '_cmd' suffix from a Jupyter notebook.
 
 ### Dataset Preparation
 
 Tool for peparing training and evaluation datasets. 
 
-This tool prepares HDF5 datsets (Regions) composed of a raw data and ground truth data channels stored in different groups for model training and evaluation. The Regions are subdivided into a grid of potential Training Examples. Because much of the 3D volume may be empty space, a threshold is set to identify Training Examples with signal. An above-threshold-ratio is set to determine the percentage of Training Examples that should be above the threshold (i.e. Training Examples with and without signal).
+This tool prepares an HDF5 dataset that can be used for training a model or for evaluating model performance. Input datsets (Regions) composed of a raw data and ground truth data channels stored in different groups in HDF5 format are required. The Regions are automatically subdivided into a grid of potential Training Examples. Because much of the 3D volume may be empty space, a threshold is set to identify Training Examples with signal. An above-threshold-ratio is set to determine the percentage of Training Examples/Region that should be above the set threshold (i.e. Training Examples with and without signal).
 
 * Regions = crops that are manually extracted from a image volume; stored at HDF5 datasets where channels are in different groups
 * Training examples = small crops automatically extracted from Regions using this script
@@ -35,15 +35,15 @@ Usage:
 #### Required Parameters
 | Argument   | Default | Description                                                                           |
 |------------|---------|---------------------------------------------------------------------------------------|
+| --region-dir |  | directory where input datasets in HDF5 format are located |
 | --output-dir |  | output directory |
 | --dataset-dir |  | directory where output HDF5 dataset is to be saved |
-| --region-dir |  | directory where input datasets in HDF5 format are located |
 | --above-threshold-ratio | 0.9 | ratio of Training Examples above the set threshold versus training examples below the set threshold to be included |
 | --samples-per-region | 50 | number of Training Examples per Region to include in the dataset |
 
 ### Model Training
 
-This tool will train a U-Net model in HDF5 format using an input dataset in HDF5 format generated via Dataset Preparation (above).
+This tool will train a U-Net model using an input dataset generated via Dataset Preparation (above).
 
 Usage: 
 
@@ -85,8 +85,32 @@ Usage:
 | --batch-size | 1 |    |
 | --with-visualization-sample | False |    |
 
+### Model Evaluation
 
-Below is an example of how to volume segmentation:
+To appropriately evaluate the model performance it should be compared to ground truth data from independent samples (brains/animals) not involved in training. It is recommended that the model is run via the [ExLLSM Circuit Reconstruction Pipeline](https://github.com/JaneliaSciComp/exllsm-circuit-reconstruction) where additional recommended post-U-Net processing steps not included here can be used. To evaluate the performance of neuron segmentation run via the ExLLSM Circuit Reconstruction Pipeline to ground truth data from independent samples, the ExLLSM_unet_performance_evaluate.py script from the [ExLLSM Synapse Detection](https://github.com/JaneliaSciComp/SynapseDetectorDNN) repository can be used.
+
+However, if desired, the perforance of a trained U-Net neuron segmentation model without the additional post-U-Net processing steps can be evaluated here via the evaluation tool.
+
+Usage: 
+
+     python evaluation_cmd.py --dataset /EVAL-DATASET-DIR/evaluation-dataset.h5 --model-path /MODEL-DIR/trained-model.h5 --output-dir /OUTPUT-DIR/
+
+#### Required Parameters
+| Argument   | Default | Description                                                                           |
+|------------|---------|---------------------------------------------------------------------------------------|
+| --dataset |  | Path to evaluation dataset in HDF5 format |
+| --output-dir |  | output directory |
+| --model-path |  | Path to trained HDF5 model |
+
+#### Optional Parameters
+|------------------------------------------------------------------------------------------------------------|
+| Additional optional parameters to determine the number of examples from the evaluation dataset to be used for evaluation (default 40) and the interval to print examples for visulization (default 10) can be found in the script |
+
+### Image Segmentation
+
+It is recommended that the [ExLLSM Circuit Reconstruction Pipeline](https://github.com/JaneliaSciComp/exllsm-circuit-reconstruction) be used to utilize a trained model for neuron segmentation. Details on how to run the pipeline and suggested post-U-Net processing steps and parameters can be found there. 
+
+Below is an example of how to volume segmentation without the ExLLSM Circuit Reconstruction Pipeline:
 ```
 python volumeSegmentation.py \
     -i /test/ExM/P1_pIP10/20200808/images/export_substack_crop.n5 \
@@ -108,7 +132,7 @@ python volumeSegmentation.py \
     --small_region_size_threshold 1000
 ```
 
-Segmenting the volume can be preceded by calculating the global scaling factor using:
+Segmenting the volume can be preceded by calculating the global scaling factor (not recommended) using:
 ```
 python volumeScalingFactor.py \
     -i /test/ExM/P1_pIP10/20200808/images/export_substack_crop.n5 \
