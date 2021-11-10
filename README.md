@@ -87,9 +87,11 @@ Usage:
 
 ### Model Evaluation
 
-To appropriately evaluate the model performance it should be compared to ground truth data from independent samples (brains/animals) not involved in training. It is recommended that the model is run via the [ExLLSM Circuit Reconstruction Pipeline](https://github.com/JaneliaSciComp/exllsm-circuit-reconstruction) where additional recommended post-U-Net processing steps not included here can be used. To evaluate the performance of neuron segmentation run via the ExLLSM Circuit Reconstruction Pipeline to ground truth data from independent samples, the ExLLSM_unet_performance_evaluate.py script from the [ExLLSM Synapse Detection](https://github.com/JaneliaSciComp/SynapseDetectorDNN) repository can be used.
+To appropriately evaluate the model performance it should be compared to ground truth data from independent samples (brains/animals) not involved in training. 
 
-However, if desired, the perforance of a trained U-Net neuron segmentation model without the additional post-U-Net processing steps can be evaluated here via the evaluation tool.
+It is recommended that the trained model is used via the [ExLLSM Circuit Reconstruction Pipeline](https://github.com/JaneliaSciComp/exllsm-circuit-reconstruction) where additional recommended post-U-Net processing steps not included here can be used. To evaluate the performance of a model run via the ExLLSM Circuit Reconstruction Pipeline to ground truth data from independent samples, the ExLLSM_unet_performance_evaluate.py script from the [ExLLSM Synapse Detection](https://github.com/JaneliaSciComp/SynapseDetectorDNN) repository can be used.
+
+However, if desired, the perforance of a model (without the recommended post-U-Net processing steps) can be evaluated here using the evaluation tool.
 
 Usage: 
 
@@ -107,7 +109,7 @@ Additional optional parameters can be found in the script. These include the num
 
 ### Image Segmentation
 
-It is recommended that the [ExLLSM Circuit Reconstruction Pipeline](https://github.com/JaneliaSciComp/exllsm-circuit-reconstruction) be used to utilize a trained model for neuron segmentation. Details on how to run the pipeline and suggested post-U-Net processing steps and parameters can be found there. 
+It is recommended that the trained model is used via the [ExLLSM Circuit Reconstruction Pipeline](https://github.com/JaneliaSciComp/exllsm-circuit-reconstruction) where additional recommended post-U-Net processing steps not included here can be used. Details on how to run the pipeline and suggested post-U-Net processing steps and parameters can be found there. 
 
 Below is an example of how to volume segmentation without the ExLLSM Circuit Reconstruction Pipeline:
 ```
