@@ -1,5 +1,7 @@
 # ExLLSM Neuron Segmentation
 
+[![DOI](https://zenodo.org/badge/423946304.svg)](https://zenodo.org/badge/latestdoi/423946304)
+
 This is an adaptation of Linus Meienberg's [tool](https://github.com/randomstructures/ExLSM-Image-Segmentation) for segmenting neurons in large scale volumetric images generated via expansion microscopy and lattice light-sheet imaging (ExLLSM). This tool utilizes a trained U-Net model to segment neurons from background and non-specific antibody labels. 
 
 Code to train a U-Net model and to prepare training and evaluation datasets is provided here. To use a trained model for neuron segmentation, the code is integrated into the [ExLLSM Circuit Reconstruction Pipeline](https://github.com/JaneliaSciComp/exllsm-circuit-reconstruction) and currently meant to be run there, inside of a Docker container. However, a brief overview of how to use the tool outside of the ExLLSM Circuit Reconstruction Pipeline is included here as well.
